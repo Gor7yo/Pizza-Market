@@ -1,0 +1,18 @@
+{
+  "extends": "@market/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules", "playwright-report", "test-results"]
+}

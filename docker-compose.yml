@@ -1,0 +1,89 @@
+# Development stack.
+#   Infrastructure only:  docker compose up -d postgres redis s3   (pnpm infra:up)
+#   Everything:           docker compose up --build
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: market
+      POSTGRES_PASSWORD: market
+      POSTGRES_DB: market
+    # host port 5433: 5432 is often taken by a locally installed PostgreSQL
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U market -d market']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # S3-compatible object storage for product images (SeaweedFS; MinIO no longer
+  # publishes images on Docker Hub). Anonymous reads are allowed by s3.json;
+  # the API creates the bucket on startup (S3_AUTO_CREATE_BUCKET=true).
+  s3:
+    image: chrislusf/seaweedfs:latest
+    command: 'server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json -volume.max=0'
+    ports:
+      - '8333:8333'
+    volumes:
+      - s3-data:/data
+      - ./docker/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    env_file: ./back/.env
+    # Local demo stack: production settings (secure cookies, real e-mail provider)
+    # belong to the deployment environment, see docs/en/deployment.md.
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://market:market@postgres:5432/market
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT: http://s3:8333
+      COOKIE_SECURE: 'false'
+      DEV_ENDPOINTS_ENABLED: 'false'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      s3:
+        condition: service_started
+    ports:
+      - '4000:4000'
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: http://localhost:3000
+        API_INTERNAL_URL: http://api:4000
+    environment:
+      API_INTERNAL_URL: http://api:4000
+    depends_on:
+      - api
+    ports:
+      - '3000:3000'
+
+volumes:
+  postgres-data:
+  redis-data:
+  s3-data:

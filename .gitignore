@@ -1,0 +1,31 @@
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# generated
+back/src/generated/
+
+# env
+.env
+.env.*
+!.env.example
+
+# tests
+coverage/
+front/test-results/
+front/playwright-report/
+front/blob-report/
+
+# misc
+.DS_Store
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json

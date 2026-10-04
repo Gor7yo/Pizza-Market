@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 22
+  # values for build/test only - never real secrets
+  DATABASE_URL: postgresql://market:market@localhost:5432/market
+  TEST_DATABASE_URL: postgresql://market:market@localhost:5432/market_test
+  REDIS_URL: redis://localhost:6379/0
+  JWT_ACCESS_SECRET: ci-access-secret-ci-access-secret-ci-access
+  CODE_HMAC_SECRET: ci-hmac-secret-ci-hmac-secret-ci-hmac-secret
+  TURBO_TELEMETRY_DISABLED: 1
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  quality:
+    name: Lint · typecheck · unit tests · build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  integration:
+    name: API integration tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: market
+          POSTGRES_PASSWORD: market
+          POSTGRES_DB: market_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U market" --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @market/shared build
+      - name: Apply migrations to the test database
+        run: pnpm --filter @market/api exec prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ env.TEST_DATABASE_URL }}
+      - run: pnpm --filter @market/api test:integration
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: [quality]
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: market
+          POSTGRES_PASSWORD: market
+          POSTGRES_DB: market
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U market" --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      EMAIL_PROVIDER: console
+      DEV_ENDPOINTS_ENABLED: 'true'
+      GEOCODER_PROVIDER: none
+      COOKIE_SECURE: 'false'
+      API_INTERNAL_URL: http://localhost:4000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm --filter @market/api exec prisma migrate deploy
+      - run: pnpm db:seed
+        env:
+          SEED_RESET: 'true'
+      - name: Start API and web
+        run: |
+          (cd back && NODE_ENV=test node dist/main > ../api.log 2>&1 &)
+          (cd front && NODE_ENV=production pnpm start > ../web.log 2>&1 &)
+          npx wait-on -t 120000 http://localhost:4000/api/v1/health http://localhost:3000
+      - run: pnpm --filter @market/web exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-artifacts
+          path: |
+            front/playwright-report
+            front/test-results
+            api.log
+            web.log

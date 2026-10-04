@@ -1,0 +1,28 @@
+.button {
+  display: grid;
+  place-items: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  border: 1px solid var(--glass-edge);
+  border-radius: 50%;
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  color: var(--color-text);
+  box-shadow: var(--glass-shadow);
+  transition:
+    color var(--duration-base) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.button:hover {
+  color: var(--color-primary);
+}
+
+.button:active {
+  transform: scale(0.92);
+}
+
+.active {
+  color: var(--color-primary);
+}

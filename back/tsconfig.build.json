@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    // nest-cli deletes dist/ before every build; an incremental cache kept outside
+    // dist/ would make tsc believe nothing changed and emit no files at all
+    "incremental": false
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "test", "dist", "prisma", "**/*spec.ts"]
+}

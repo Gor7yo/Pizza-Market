@@ -1,0 +1,221 @@
+.page {
+  padding-top: var(--space-6);
+  display: grid;
+  gap: var(--space-5);
+}
+
+.title {
+  font-size: var(--text-3xl);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-shadow);
+  transition: box-shadow var(--duration-base) var(--ease-out);
+}
+
+.card:hover {
+  box-shadow: var(--glass-shadow-lift);
+}
+
+.cardTitle {
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+}
+
+.muted {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.layout {
+  display: grid;
+  gap: var(--space-5);
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    align-items: start;
+  }
+}
+
+.panel {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-shadow);
+}
+
+.panelTitle {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+}
+
+.placed {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+/* ───────── timeline ───────── */
+.timeline {
+  position: relative;
+  padding-left: var(--space-2);
+}
+
+.steps {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.track {
+  position: absolute;
+  left: calc(var(--space-2) + 15px);
+  top: 16px;
+  bottom: 16px;
+  width: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.trackFill {
+  width: 100%;
+  background: var(--color-success);
+  transform-origin: top;
+}
+
+.stepRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.dot {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-inverse);
+}
+
+.done .dot {
+  border-color: var(--color-success);
+  background: var(--color-success);
+}
+
+.current .dot {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  box-shadow: 0 0 0 6px var(--color-primary-soft);
+}
+
+.stepLabel {
+  font-weight: var(--weight-semibold);
+}
+
+.pending .stepLabel {
+  color: var(--color-text-muted);
+  font-weight: var(--weight-regular);
+}
+
+.stepTime {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.pulse {
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 10px rgb(194 65 12 / 0.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+  }
+}
+
+.cancelled {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  font-weight: var(--weight-semibold);
+}
+
+/* ───────── items ───────── */
+.items {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.thumb {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.total {
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--color-border-strong);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

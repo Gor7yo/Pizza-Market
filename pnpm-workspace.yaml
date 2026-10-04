@@ -1,0 +1,18 @@
+packages:
+  - front
+  - back
+  - packages/*
+
+# Native/postinstall builds we trust. Everything else stays blocked (pnpm default).
+allowBuilds:
+  '@prisma/engines': true
+  prisma: true
+  argon2: true
+  sharp: true
+  esbuild: true
+  '@parcel/watcher': true
+  unrs-resolver: true
+  msgpackr-extract: true
+  # telemetry pinger pulled in by swagger-ui - not needed
+  '@scarf/scarf': false
+  '@swc/core': true

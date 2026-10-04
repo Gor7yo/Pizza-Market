@@ -1,0 +1,22 @@
+.page {
+  padding-top: var(--space-4);
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.breadcrumbs li + li::before {
+  content: '/';
+  margin-right: var(--space-2);
+  color: var(--color-border-strong);
+}
+
+.breadcrumbs a:hover {
+  color: var(--color-text);
+}

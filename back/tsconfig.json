@@ -1,0 +1,10 @@
+{
+  "extends": "@market/typescript-config/nestjs.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "types": ["node", "jest", "multer"]
+  },
+  "include": ["src", "test", "prisma"],
+  "exclude": ["node_modules", "dist"]
+}

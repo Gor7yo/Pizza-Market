@@ -1,0 +1,112 @@
+.page {
+  padding-top: var(--space-6);
+}
+
+.heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  font-size: var(--text-3xl);
+}
+
+.count {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+@media (min-width: 900px) {
+  .toolbar {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.search {
+  position: relative;
+  flex: 1;
+  max-width: 520px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.searchInput {
+  padding-left: calc(var(--space-4) * 2 + 18px);
+  border-radius: var(--radius-pill);
+}
+
+.filters {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.filters::-webkit-scrollbar {
+  display: none;
+}
+
+.tag {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius-pill);
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-shadow);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out);
+}
+
+.tag[aria-pressed='true'] {
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-text-inverse);
+}
+
+.sort {
+  flex-shrink: 0;
+  width: auto;
+  min-height: 40px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+}
+
+.results {
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+.pending {
+  opacity: 0.55;
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-8) 0;
+}
