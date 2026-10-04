@@ -288,7 +288,7 @@ export function ProductForm({ product }: { product?: AdminProductDto }) {
                       render={({ field: f }) => (
                         <MoneyInput
                           label={t('priceModifier')}
-                          value={f.value}
+                          value={f.value ?? 0}
                           onChange={(v) => f.onChange(v ?? 0)}
                         />
                       )}

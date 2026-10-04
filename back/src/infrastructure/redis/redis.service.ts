@@ -12,6 +12,8 @@ export function redisOptionsFromUrl(url: string): RedisOptions {
     password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
     db: parsed.pathname.length > 1 ? Number(parsed.pathname.slice(1)) : 0,
     tls: parsed.protocol === 'rediss:' ? {} : undefined,
+    // ?family=0 enables IPv6 lookups (required on IPv6-only private networks, e.g. Railway)
+    family: Number(parsed.searchParams.get('family') ?? 4),
   };
 }
 
