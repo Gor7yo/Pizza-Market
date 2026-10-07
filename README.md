@@ -1,6 +1,6 @@
 <div align="center">
 
-# Tonir Pizza[(https://web-production-72a2f.up.railway.app/)]
+# [Tonir Pizza](https://web-production-72a2f.up.railway.app/)
 
 **Full-stack pizza delivery store for the Armenian market**
 
